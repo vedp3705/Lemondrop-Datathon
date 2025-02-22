@@ -1,0 +1,15 @@
+# Ignore SQLite database files
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+
+# Ignore environment variable files
+.env
+*.env
+.env.local
+.env.*.local
+
+# Ignore Python virtual environments
+venv/
+.kaggle/
