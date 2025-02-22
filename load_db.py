@@ -10,7 +10,7 @@ df = pd.read_sql(query, conn)
 
 # Display initial data overview
 print("Initial Data Overview:")
-df.info()git 
+df.info()
 
 # List of columns to keep
 columns_to_keep = [
