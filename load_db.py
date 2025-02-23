@@ -1,18 +1,16 @@
 import sqlite3
 import pandas as pd
 
-# Connect to the SQLite database
-conn = sqlite3.connect("firedata.sqlite")  # Replace with your database filename
+conn = sqlite3.connect("firedata.sqlite")  
 
-# Load data from the 'Fires' table (assuming this is the main table of interest)
+# Load data from the 'Fires' table which contains most of the data we want to use
 query = "SELECT * FROM Fires"
 df = pd.read_sql(query, conn)
 
-# Display initial data overview
 print("Initial Data Overview:")
 df.info()
 
-# List of columns to keep
+# List of columns we want to train our model on
 columns_to_keep = [
     "OBJECTID",
     "FOD_ID",
@@ -28,22 +26,18 @@ columns_to_keep = [
     "STATE"
 ]
 
-# Drop specified columns and remove missing values
 df_cleaned = df[columns_to_keep]
 
 df_cleaned = df_cleaned.dropna(subset=['COUNTY'])
 
-# Save the cleaned data back to SQLite (optional)
 df_cleaned.to_sql("Fires_Cleaned", conn, if_exists="replace", index=False)
 
-# Close connection
 conn.close()
 
-# Display cleaned data overview
 print("Final Data Overview:")
 df_cleaned.info()
 
-# Convert the cleaned DataFrame to a CSV file
+# Convert the cleaned DataFrame to a CSV file which we can run more pre-processing before inputting to model
 csv_filename = "cleaned_fire_data.csv"
 df_cleaned.to_csv(csv_filename, index=False)
 print(f"Cleaned data has been successfully saved to {csv_filename}")

@@ -8,16 +8,14 @@ import numpy as np
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app) 
 
 model = tf.keras.models.load_model("fire_size_classifier.h5")
 preprocessor = joblib.load("preprocessor_fireclass.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
 
-# Replace with your actual API key
 API_KEY = "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"
 
-# Groq API Endpoint
 API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 geolocator = Nominatim(user_agent="count_locator_app")
@@ -69,6 +67,7 @@ def predict_fire_size(county, month, year, cause, latitude, longitude):
     return fire_size_class
 
 
+#Groq API that is called once we predict the fire_size_class we get
 def get_fire_mitigation_recommendation(county, month, year, cause, fire_size_class):
     headers = {
         "Authorization": f"Bearer {API_KEY}",
@@ -150,4 +149,4 @@ def geocode(county):
         return {'error': 'County not found'}
 
 if __name__ == '__main__':
-    app.run(port=5002, debug=True)  # Single backend runs on port 5002
+    app.run(port=5002, debug=True)  # Backend runs on port 5002
