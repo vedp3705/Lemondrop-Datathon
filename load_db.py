@@ -12,17 +12,26 @@ df = pd.read_sql(query, conn)
 print("Initial Data Overview:")
 df.info()
 
-# List of columns to drop
-columns_to_drop = [
-    "FOD_ID", "FPA_ID", "SOURCE_SYSTEM_TYPE", "SOURCE_SYSTEM", 
-    "NWCG_REPORTING_AGENCY", "NWCG_REPORTING_UNIT_ID", "NWCG_REPORTING_UNIT_NAME",
-    "SOURCE_REPORTING_UNIT", "SOURCE_REPORTING_UNIT_NAME", "LOCAL_FIRE_REPORT_ID",
-    "LOCAL_INCIDENT_ID", "FIRE_CODE", "FIRE_NAME", "ICS_209_INCIDENT_NUMBER"
+# List of columns to keep
+columns_to_keep = [
+    "OBJECTID",
+    "FOD_ID",
+    "NWCG_REPORTING_UNIT_NAME",
+    "FIRE_YEAR",
+    "DISCOVERY_DATE",
+    "STAT_CAUSE_DESCR",
+    "FIRE_SIZE",
+    "FIRE_SIZE_CLASS",
+    "LATITUDE",
+    "LONGITUDE",
+    "COUNTY",
+    "STATE"
 ]
 
 # Drop specified columns and remove missing values
-df_cleaned = df.drop(columns=columns_to_drop, errors="ignore")
-df_cleaned = df_cleaned.dropna()
+df_cleaned = df[columns_to_keep]
+
+df_cleaned = df_cleaned.dropna(subset=['COUNTY'])
 
 # Save the cleaned data back to SQLite (optional)
 df_cleaned.to_sql("Fires_Cleaned", conn, if_exists="replace", index=False)
