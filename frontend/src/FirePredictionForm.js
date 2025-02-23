@@ -12,7 +12,6 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import pinImage from "./images/pin.png";
 
-// ResizeMap Component to fix rendering issues when the container size changes
 const ResizeMap = () => {
   const map = useMap();
   useEffect(() => {
@@ -23,7 +22,7 @@ const ResizeMap = () => {
   return null;
 };
 
-// Map click handler
+// Handles lat and long for interactive map
 const MapClickHandler = ({ setLatitude, setLongitude }) => {
   useMapEvents({
     click(e) {
@@ -51,7 +50,7 @@ const FirePredictionForm = () => {
     fetch("/data/counties.json")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Loaded counties:", data); // Log counties to check
+        console.log("Loaded counties:", data); 
         setCounties(data);
       })
       .catch((error) => console.error("Error loading counties:", error));
@@ -113,7 +112,7 @@ const FirePredictionForm = () => {
     popupAnchor: [0, -32],
   });
 
-  // Determine if form is valid based on county OR coordinates
+  // Determine if form is valid based on its county or coordinates
   const isFormValid =
     (county || latitude || longitude) && month && year && cause;
 
@@ -130,18 +129,16 @@ const FirePredictionForm = () => {
         padding: "2rem",
       }}
     >
-      {/* Outer container: add alignItems: 'stretch' so columns match height */}
       <div
         style={{
           display: "flex",
           flexDirection: "row",
           alignItems: "stretch",
           gap: "1rem",
-          width: mapVisible ? "1016px" : "500px", // 500px (form) + gap + 500px (map) when map is visible
+          width: mapVisible ? "1016px" : "500px", 
           transition: "width 0.3s ease-in-out",
         }}
       >
-        {/* Form Section */}
         <div
           style={{
             width: "500px",
@@ -254,7 +251,7 @@ const FirePredictionForm = () => {
                   borderRadius: "4px",
                   border: "1px solid #ddd",
                   fontSize: "14px",
-                  boxSizing: "border-box", // ensures the width stays consistent
+                  boxSizing: "border-box",
                 }}
               />
             </div>
