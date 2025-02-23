@@ -49,7 +49,8 @@ const FirePredictionForm = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#f5f5f5',
+      background: 'url("https://cdn.photoroom.com/v2/image-cache?path=gs://background-7ef44.appspot.com/backgrounds_v3/forest/27_forest.jpg") no-repeat center center fixed',
+      backgroundSize: 'cover',
       padding: '2rem',
       display: 'flex',
       justifyContent: 'center',
