@@ -34,8 +34,18 @@ const FirePredictionForm = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
+  const [counties, setCounties] = useState([]);
 
-  const counties = ["County1", "County2", "County3"];
+  useEffect(() => {
+    fetch('/data/counties.json')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Loaded counties:', data);  // Log counties to check
+        setCounties(data);
+      })
+      .catch(error => console.error('Error loading counties:', error));
+  }, []);
+
   const causes = ["Lightning", "Debris Burning", "Campfire", "Other"];
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -53,7 +63,7 @@ const FirePredictionForm = () => {
       coordinates
     };
     try {
-      const response = await fetch('http://localhost:5000/predict', {
+      const response = await fetch('http://localhost:5002/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -77,6 +87,9 @@ const FirePredictionForm = () => {
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
   });
+
+  // Determine if form is valid based on county OR coordinates
+  const isFormValid = (county || coordinates) && month && year && cause;
 
   return (
     <div style={{
@@ -122,7 +135,7 @@ const FirePredictionForm = () => {
                 fontSize: '14px',
                 fontWeight: '500'
               }}>
-                County
+                Location
               </label>
               <select 
                 value={county} 
@@ -135,7 +148,7 @@ const FirePredictionForm = () => {
                   fontSize: '14px'
                 }}
               >
-                <option value="">Select a county</option>
+                <option value="">Select a county or open map</option>
                 {counties.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -221,16 +234,16 @@ const FirePredictionForm = () => {
             )}
             <button 
               type="submit" 
-              disabled={loading || !county || !month || !year || !cause} 
+              disabled={loading || !isFormValid} 
               style={{
-                backgroundColor: loading || !county || !month || !year || !cause ? '#ccc' : '#007bff',
+                backgroundColor: loading || !isFormValid ? '#ccc' : '#007bff',
                 color: 'white',
                 padding: '12px',
                 borderRadius: '4px',
                 border: 'none',
                 fontSize: '14px',
                 fontWeight: '500',
-                cursor: loading || !county || !month || !year || !cause ? 'not-allowed' : 'pointer',
+                cursor: loading || !isFormValid ? 'not-allowed' : 'pointer',
                 marginTop: '1rem'
               }}
             >
