@@ -30,15 +30,39 @@ cause_mapping = {
     "Other": 3
 }
 
+def reverse_geocode(lat, lon):
+    """Use geopy to determine the county from latitude/longitude."""
+    try:
+        location = geolocator.reverse((lat, lon), exactly_one=True, addressdetails=True)
+        if location and "county" in location.raw["address"]:
+            return location.raw["address"]["county"]
+        return None
+    except Exception as e:
+        print(f"Reverse geocoding error: {e}")
+        return None
+
 def predict_fire_size(county, month, year, cause, latitude, longitude):
+    cause_mapping = {
+        "Lightning": 1.0,
+        "Equipment Use": 2.0,
+        "Smoking": 3.0,
+        "Campfire": 4.0,
+        "Debris Burning": 5.0,
+        "Railroad": 6.0,
+        "Arson": 7.0,
+        "Children": 8.0,
+        "Miscellaneous": 9.0
+    }
+
     input_data = pd.DataFrame({
         "FIRE_YEAR": [year],
         "LATITUDE": [latitude],
         "LONGITUDE": [longitude],
         "MONTH_sin": [np.sin(2 * np.pi * month / 12)],
         "MONTH_cos": [np.cos(2 * np.pi * month / 12)],
-        "STAT_CAUSE_CODE": [cause]
+        "STAT_CAUSE_CODE": [cause_mapping[cause]]
     })
+
     input_transformed = preprocessor.transform(input_data)
     predicted_class_index = np.argmax(model.predict(input_transformed))
     fire_size_class = label_encoder.inverse_transform([predicted_class_index])[0]
@@ -51,12 +75,22 @@ def get_fire_mitigation_recommendation(county, month, year, cause, fire_size_cla
         "Content-Type": "application/json"
     }
 
+    fire_severity = {
+        "A": "Minimal fire, local containment is sufficient.",
+        "B": "Small fire, may require regional response.",
+        "C": "Moderate fire, requires coordinated suppression efforts.",
+        "D": "Large fire, state-level intervention may be needed.",
+        "E": "Very large fire, multiple agencies required.",
+        "F": "Extreme fire, national-level response advised.",
+        "G": "Catastrophic fire, mass evacuations and air support required."
+    }
+
     prompt = (
-        f"Explicitly state that a wildfire was discovered in {county} county in {month} {year}. "
-        f"Explicitly state that the reported cause is {cause}. Estimate the cost to put out based on historical data and the class of fire."
-        f"Name a 3 fire departments in that county and tell me what steps the fire departments should take to minimize damage. "
-        f"Use the context of the county/area. (ex: how urban the area is, demographic of residents) "
-        f"Give a few tips to reduce the likelihood and damage of the fires in the future (ex: trim certain kinds of vegetation, limit certain behaviors)."
+        f"Explicitly state that a fire was discovered in {county} county in {month} {year}. Mention the circumstances behind the report indicate it will be a class {fire_size_class} fire which has the description {fire_severity[fire_size_class]}."
+        f"Explicitly state that the reported cause is {cause}. Estimate the cost to put out based on historical data and the {fire_size_class} class of fire."
+        f"Numerically list 3 fire departments in that county and tell me what steps the fire departments should take to minimize damage. "
+        f"Use the context of the cause and the county/area. (ex: how urban the area is, demographic of residents) "
+        f"Give 3 tips to reduce the likelihood and damage of the fires in the future (ex: trim certain kinds of vegetation, limit certain behaviors)."
         f"Do not give extra information. Give you answer in a minimalist format with bullet points."
     )
 
@@ -83,16 +117,21 @@ def predict_fire():
     month = data.get("month")
     year = data.get("year")
     cause = data.get("cause")
-    latitude = 0
-    longitude = 0
+    latitude = data.get("latitude")
+    longitude = data.get("longitude")
 
-    if not latitude and longitude:
+    if not latitude and not longitude:
         coordinates = geocode(county)
         latitude = coordinates[0]
         longitude = coordinates[1]
+    
+    if latitude and longitude and not county:
+        county = reverse_geocode(latitude, longitude)
+        if not county:
+            return jsonify({"error": "Could not determine county from coordinates"}), 400
 
     fire_size_class = predict_fire_size(county, month, year, cause, latitude, longitude)
-    # Get mitigation plan from Groq API
+    print("PREDICTION:", fire_size_class)
     mitigation_plan = get_fire_mitigation_recommendation(county, month, year, cause, fire_size_class)
 
     return jsonify({
