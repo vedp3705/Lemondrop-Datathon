@@ -1,7 +1,7 @@
 /* Full-page container with a fire-themed background */
 .fire-form-container {
   min-height: 100vh;
-  background: url("https://images.unsplash.com/photo-1596547095760-76d4a16cc2a1?auto=format&fit=crop&w=1350&q=80")
+  background: url("https://cdn.photoroom.com/v2/image-cache?path=gs://background-7ef44.appspot.com/backgrounds_v3/forest/27_forest.jpg")
     no-repeat center center fixed;
   background-size: cover;
   display: flex;
