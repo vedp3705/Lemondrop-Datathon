@@ -91,7 +91,7 @@ const FirePredictionForm = () => {
       if (response.ok) {
         const data = await response.json();
         navigate("/results", {
-          state: { mitigationPlan: data.mitigation_plan.mitigation_plan },
+          state: { mitigationPlan: data.mitigation_plan },
         });
       } else {
         setMessage("Error: Failed to get prediction");
