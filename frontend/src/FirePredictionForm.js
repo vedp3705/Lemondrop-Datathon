@@ -71,6 +71,30 @@ const FirePredictionForm = () => {
     "December",
   ];
 
+  const handleCountyChange = async (e) => {
+    const selectedCounty = e.target.value;
+    setCounty(selectedCounty);
+
+    if (selectedCounty) {
+      try {
+        const response = await fetch(
+          `http://localhost:5003/geocode?county=${encodeURIComponent(
+            selectedCounty
+          )}`
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setCoordinates([data.latitude, data.longitude]);
+        } else {
+          setCoordinates(null);
+        }
+      } catch (error) {
+        setCoordinates(null);
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -179,7 +203,7 @@ const FirePredictionForm = () => {
               </label>
               <select
                 value={county}
-                onChange={(e) => setCounty(e.target.value)}
+                onChange={handleCountyChange}
                 style={{
                   width: "100%",
                   padding: "8px 12px",
@@ -292,12 +316,7 @@ const FirePredictionForm = () => {
                   fontSize: "14px",
                   fontWeight: "500",
                 }}
-              >
-                <p>
-                  Selected Coordinates: {coordinates[0].toFixed(4)},{" "}
-                  {coordinates[1].toFixed(4)}
-                </p>
-              </div>
+              ></div>
             )}
             <button
               type="submit"

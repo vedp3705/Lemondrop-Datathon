@@ -14,7 +14,7 @@ const Results = () => {
           <p style={styles.content}>{mitigationPlan}</p>
         </div>
         <button style={styles.button} onClick={() => navigate("/")}>
-          ⬅️ Go Back
+          Go Back
         </button>
       </div>
     </div>

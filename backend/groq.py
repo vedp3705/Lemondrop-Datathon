@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify
+from geopy.geocoders import Nominatim
+from flask_cors import CORS
 import requests
 
 app = Flask(__name__)
@@ -8,6 +10,9 @@ API_KEY = "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"
 
 # Groq API Endpoint (Update this if necessary)
 API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+geolocator = Nominatim(user_agent="count_locator_app")
+CORS(app)
 
 def get_fire_mitigation_recommendation(county, month, year, cause):
     headers = {
@@ -56,6 +61,25 @@ def analyze_fire():
     mitigation_plan = get_fire_mitigation_recommendation(county, month, year, cause)
     
     return jsonify({"mitigation_plan": mitigation_plan})
+
+@app.route('/geocode', methods=['GET'])
+def geocode():
+    county = request.args.get('county')
+    
+    if not county:
+        return jsonify({'error': 'No county provided'}), 400
+
+    location = geolocator.geocode(county)
+    if location:
+        #print(f"County: {county}, Latitude: {location.latitude}, Longitude: {location.longitude}") 
+        return jsonify({
+            'county': county,
+            'latitude': location.latitude,
+            'longitude': location.longitude
+        })
+    else:
+        return jsonify({'error': 'County not found'}), 404
+
 
 if __name__ == '__main__':
     app.run(port=5003, debug=True)
