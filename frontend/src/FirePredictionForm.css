@@ -1,0 +1,70 @@
+/* Full-page container with a fire-themed background */
+.fire-form-container {
+  min-height: 100vh;
+  background: url("https://images.unsplash.com/photo-1596547095760-76d4a16cc2a1?auto=format&fit=crop&w=1350&q=80")
+    no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Semi-transparent form wrapper for readability */
+.form-wrapper {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 2rem;
+  border-radius: 10px;
+  color: #fff;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Form heading */
+.form-wrapper h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Form group styling */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
+}
+
+/* Submit button styling */
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #e25822;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+.submit-button:hover {
+  background: #c7441d;
+}
+
+/* Response message styling */
+.response {
+  margin-top: 1.5rem;
+  text-align: center;
+}
