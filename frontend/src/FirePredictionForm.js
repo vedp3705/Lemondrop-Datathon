@@ -8,7 +8,7 @@ const FirePredictionForm = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const counties = ["County1", "County2", "County3"];
+  const counties = ["Alameda", "Santa Clara", "Orange County"];
   const causes = ["Lightning", "Debris Burning", "Campfire", "Other"];
   const months = [
     "January",
