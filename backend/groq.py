@@ -17,7 +17,7 @@ def get_fire_mitigation_recommendation(county, month, year, cause):
 
     prompt = (
         f"A wildfire was discovered in {county} county in {month} {year}. "
-        f"The reported cause is {cause}. Name a few fire departments in that county and tell me what steps I should take to be safe. Make sure to tailor your response to the specific details I told you "
+        f"The reported cause is {cause}. Name a few fire departments in that county and tell me what steps I should take to be safe from the specific cause. Make sure to tailor your response to the specific details I told you "
 
        
     )
@@ -34,10 +34,10 @@ def get_fire_mitigation_recommendation(county, month, year, cause):
 
     if response.status_code == 200:
         mitigation_plan = response.json()["choices"][0]["message"]["content"]
-        print("🔥 Groq AI Response:", mitigation_plan)  # ✅ Debug print here
+        #print("Groq AI Response:", mitigation_plan)  
         return mitigation_plan
     else:
-        print("❌ Error from Groq:", response.text)  # ✅ Debugging error
+        #print("Error from Groq:", response.text)  
         return f"Error: {response.text}"
 
 

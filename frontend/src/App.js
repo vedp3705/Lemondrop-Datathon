@@ -1,11 +1,16 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import FirePredictionForm from "./FirePredictionForm";
+import Results from "./Results";
 
 function App() {
   return (
-    <div>
-      <FirePredictionForm />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<FirePredictionForm />} />
+        <Route path="/results" element={<Results />} />
+      </Routes>
+    </Router>
   );
 }
 
