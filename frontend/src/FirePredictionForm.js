@@ -57,7 +57,7 @@ const FirePredictionForm = () => {
       .catch((error) => console.error("Error loading counties:", error));
   }, []);
 
-  const causes = ["Lightning", "Debris Burning", "Campfire", "Other"];
+  const causes = ["Lightning", "Equipment Use", "Smoking", "Campfire", "Debris Burning", "Railroad", "Arson", "Children", "Miscellaneous"];
   const months = [
     "January",
     "February",
