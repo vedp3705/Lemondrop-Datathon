@@ -10,7 +10,7 @@ import pandas as pd
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-model = tf.keras.models.load_model("fire_size_class_model.keras")
+model = tf.keras.models.load_model("fire_size_classifier.h5")
 preprocessor = joblib.load("preprocessor_fireclass.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
 
@@ -21,10 +21,31 @@ API_KEY = "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"
 API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 geolocator = Nominatim(user_agent="count_locator_app")
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+cause_mapping = {
+    "Lightning": 0,
+    "Debris Burning": 1,
+    "Campfire": 2,
+    "Other": 3
+}
+
+def predict_fire_size(county, month, year, cause, latitude, longitude):
+    input_data = pd.DataFrame({
+        "FIRE_YEAR": [year],
+        "LATITUDE": [latitude],
+        "LONGITUDE": [longitude],
+        "MONTH_sin": [np.sin(2 * np.pi * month / 12)],
+        "MONTH_cos": [np.cos(2 * np.pi * month / 12)],
+        "STAT_CAUSE_CODE": [cause]
+    })
+    input_transformed = preprocessor.transform(input_data)
+    predicted_class_index = np.argmax(model.predict(input_transformed))
+    fire_size_class = label_encoder.inverse_transform([predicted_class_index])[0]
+    return fire_size_class
 
 
-def get_fire_mitigation_recommendation(county, month, year, cause):
+def get_fire_mitigation_recommendation(county, month, year, cause, fire_size_class):
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
@@ -70,10 +91,12 @@ def predict_fire():
         latitude = coordinates[0]
         longitude = coordinates[1]
 
+    fire_size_class = predict_fire_size(county, month, year, cause, latitude, longitude)
     # Get mitigation plan from Groq API
-    mitigation_plan = get_fire_mitigation_recommendation(county, month, year, cause)
+    mitigation_plan = get_fire_mitigation_recommendation(county, month, year, cause, fire_size_class)
 
     return jsonify({
+        "predicted_fire_size_class": fire_size_class,
         "mitigation_plan": mitigation_plan
     })
 
