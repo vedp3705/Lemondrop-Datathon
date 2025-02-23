@@ -948,7 +948,7 @@ const FirePredictionForm = () => {
     popupAnchor: [0, -32],
   });
 
-  // Determine if form is valid based on county OR coordinates
+  // Determine if form is valid based on its county or coordinates
   const isFormValid =
     (county || (latitude && longitude)) && month && year && cause;
 
@@ -987,7 +987,6 @@ const FirePredictionForm = () => {
           transition: "width 0.3s ease-in-out",
         }}
       >
-        {/* Form Section */}
         <div
           style={{
             width: "500px",
