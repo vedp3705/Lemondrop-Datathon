@@ -162,7 +162,7 @@ import numpy as np
 import pandas as pd
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app)
 
 model = tf.keras.models.load_model("fire_size_classifier.h5")
 preprocessor = joblib.load("preprocessor_fireclass.pkl")
@@ -214,7 +214,6 @@ def predict_fire_size(county, month, year, cause, latitude, longitude):
     fire_size_class = label_encoder.inverse_transform([predicted_class_index])[0]
     return fire_size_class, confidence
 
-#Groq API that is called once we predict the fire_size_class we get
 def get_fire_mitigation_recommendation(county, month, year, cause, fire_size_class):
     headers = {
         "Authorization": f"Bearer {API_KEY}",
@@ -311,5 +310,3 @@ def predict_fire():
 
 if __name__ == '__main__':
     app.run(port=5002, debug=True)
-
-    app.run(port=5002, debug=True)  # Backend runs on port 5002
