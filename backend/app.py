@@ -304,29 +304,6 @@ def predict_fire():
         "mitigation_plan": mitigation_plan
     })
 
-    # response = {
-    #     "predicted_fire_size_class": fire_size_class,
-    #     "predicted_confidence": confidence,
-    #     "mitigation_plan": mitigation_plan
-    # }
-
-    # print("RESPONSE SENT TO FRONTEND:", response)  # Debugging
-
-    
-
-    # return jsonify(response)
-
-# def geocode(county):
-#     if not county:
-#         return {'error': 'No county provided'}
-    
-#     location = geolocator.geocode(county)
-#     if location:
-#         return [location.latitude, location.longitude]
-#     else:
-#         return {'error': 'County not found'}
-
-
 
 
 

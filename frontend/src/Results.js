@@ -736,19 +736,28 @@ const Results = () => {
   const displayFireClass = predicted_fire_size_class;
   const displayConfidence = (predicted_confidence * 100).toFixed(2);
 
-  // Explanation for fire class sizes with context
-  const fireClassContext = `Based on the prediction, **Class ${displayFireClass}** indicates a wildfire that, at its expected maximum extent, would cover ${
-    displayFireClass === "A" && "greater than 0 but less than or equal to 0.25 acres"
-  }${displayFireClass === "B" && "between 0.26 and 9.9 acres"}${
-    displayFireClass === "C" && "between 10.0 and 99.9 acres"
-  }${displayFireClass === "D" && "between 100 and 299 acres"}${
-    displayFireClass === "E" && "between 300 and 999 acres"
-  }${displayFireClass === "F" && "between 1000 and 4999 acres"}${
-    displayFireClass === "G" && "5000 or more acres"
-  }. The confidence level of **${displayConfidence}%** suggests that there is a high probability that this prediction is accurate.
+  // Determine the acreage description using a proper conditional (if/else or ternary)
+  let acreageDescription = "";
+  if (displayFireClass === "A") {
+    acreageDescription = "greater than 0 but less than or equal to 0.25 acres";
+  } else if (displayFireClass === "B") {
+    acreageDescription = "between 0.26 and 9.9 acres";
+  } else if (displayFireClass === "C") {
+    acreageDescription = "between 10.0 and 99.9 acres";
+  } else if (displayFireClass === "D") {
+    acreageDescription = "between 100 and 299 acres";
+  } else if (displayFireClass === "E") {
+    acreageDescription = "between 300 and 999 acres";
+  } else if (displayFireClass === "F") {
+    acreageDescription = "between 1000 and 4999 acres";
+  } else if (displayFireClass === "G") {
+    acreageDescription = "5000 or more acres";
+  }
 
-**Note:** Authorities may reference historical fires with similar circumstances and class sizes when planning emergency responses and resource allocation strategies.
-`;
+  // Explanation for fire class sizes with context
+  const fireClassContext = `Based on the prediction, **Class ${displayFireClass}** indicates a wildfire that, at its expected maximum extent, would cover ${acreageDescription}. The confidence level of **${displayConfidence}%** suggests that there is a high probability that this prediction is accurate.
+  
+  `;
 
   return (
     <div className="container">
