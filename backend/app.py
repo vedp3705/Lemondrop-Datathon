@@ -30,6 +30,17 @@ cause_mapping = {
     "Other": 3
 }
 
+def reverse_geocode(lat, lon):
+    """Use geopy to determine the county from latitude/longitude."""
+    try:
+        location = geolocator.reverse((lat, lon), exactly_one=True, addressdetails=True)
+        if location and "county" in location.raw["address"]:
+            return location.raw["address"]["county"]
+        return None
+    except Exception as e:
+        print(f"Reverse geocoding error: {e}")
+        return None
+
 def predict_fire_size(county, month, year, cause, latitude, longitude):
     input_data = pd.DataFrame({
         "FIRE_YEAR": [year],
@@ -83,13 +94,18 @@ def predict_fire():
     month = data.get("month")
     year = data.get("year")
     cause = data.get("cause")
-    latitude = 0
-    longitude = 0
+    latitude = data.get("latitude")
+    longitude = data.get("longitude")
 
-    if not latitude and longitude:
+    if not latitude and not longitude:
         coordinates = geocode(county)
         latitude = coordinates[0]
         longitude = coordinates[1]
+    
+    if latitude and longitude and not county:
+        county = reverse_geocode(latitude, longitude)
+        if not county:
+            return jsonify({"error": "Could not determine county from coordinates"}), 400
 
     fire_size_class = predict_fire_size(county, month, year, cause, latitude, longitude)
     # Get mitigation plan from Groq API
