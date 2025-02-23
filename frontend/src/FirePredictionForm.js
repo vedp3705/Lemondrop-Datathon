@@ -24,10 +24,11 @@ const ResizeMap = () => {
 };
 
 // Map click handler
-const MapClickHandler = ({ setCoordinates }) => {
+const MapClickHandler = ({ setLatitude, setLongitude }) => {
   useMapEvents({
     click(e) {
-      setCoordinates([e.latlng.lat, e.latlng.lng]);
+      setLatitude(e.latlng.lat);
+      setLongitude(e.latlng.lng);
     },
   });
   return null;
@@ -38,7 +39,8 @@ const FirePredictionForm = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [cause, setCause] = useState("");
-  const [coordinates, setCoordinates] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
@@ -79,7 +81,8 @@ const FirePredictionForm = () => {
       month: months.indexOf(month) + 1,
       year,
       cause,
-      coordinates,
+      latitude,
+      longitude,
     };
     try {
       const response = await fetch("http://localhost:5002/predict", {
@@ -111,7 +114,8 @@ const FirePredictionForm = () => {
   });
 
   // Determine if form is valid based on county OR coordinates
-  const isFormValid = (county || coordinates) && month && year && cause;
+  const isFormValid =
+    (county || latitude || longitude) && month && year && cause;
 
   return (
     <div
@@ -285,7 +289,7 @@ const FirePredictionForm = () => {
                 ))}
               </select>
             </div>
-            {coordinates && (
+            {longitude && latitude && (
               <div
                 style={{
                   color: "#4a4a4a",
@@ -294,8 +298,8 @@ const FirePredictionForm = () => {
                 }}
               >
                 <p>
-                  Selected Coordinates: {coordinates[0].toFixed(4)},{" "}
-                  {coordinates[1].toFixed(4)}
+                  Selected Coordinates: {latitude.toFixed(4)},{" "}
+                  {longitude.toFixed(4)}
                 </p>
               </div>
             )}
@@ -358,12 +362,14 @@ const FirePredictionForm = () => {
             >
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <ResizeMap />
-              <MapClickHandler setCoordinates={setCoordinates} />
-              {coordinates && (
-                <Marker position={coordinates} icon={customIcon}>
+              <MapClickHandler
+                setLatitude={setLatitude}
+                setLongitude={setLongitude}
+              />
+              {latitude !== null && longitude !== null && (
+                <Marker position={[latitude, longitude]} icon={customIcon}>
                   <Popup>
-                    Selected: {coordinates[0].toFixed(4)},{" "}
-                    {coordinates[1].toFixed(4)}
+                    Selected: {latitude.toFixed(4)}, {longitude.toFixed(4)}
                   </Popup>
                 </Marker>
               )}

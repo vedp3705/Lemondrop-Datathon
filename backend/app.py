@@ -2,9 +2,17 @@ from flask import Flask, request, jsonify
 from geopy.geocoders import Nominatim
 from flask_cors import CORS
 import requests
+import tensorflow as tf
+import joblib
+import numpy as np
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+
+model = tf.keras.models.load_model("fire_size_class_model.keras")
+preprocessor = joblib.load("preprocessor_fireclass.pkl")
+label_encoder = joblib.load("label_encoder.pkl")
 
 # Replace with your actual API key
 API_KEY = "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"
@@ -14,6 +22,7 @@ API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 geolocator = Nominatim(user_agent="count_locator_app")
 CORS(app)
+
 
 def get_fire_mitigation_recommendation(county, month, year, cause):
     headers = {
@@ -42,10 +51,8 @@ def get_fire_mitigation_recommendation(county, month, year, cause):
 
     if response.status_code == 200:
         mitigation_plan = response.json()["choices"][0]["message"]["content"]
-        # print("🔥 Groq AI Response:", mitigation_plan)  
         return mitigation_plan
     else:
-        # print("❌ Error from Groq:", response.text)  # Debugging error
         return f"Error: {response.text}"
 
 @app.route('/predict', methods=['POST'])
@@ -55,22 +62,20 @@ def predict_fire():
     month = data.get("month")
     year = data.get("year")
     cause = data.get("cause")
-    coordinates = data.get("coordinates")
+    latitude = 0
+    longitude = 0
 
-    if not all([month, year, cause]):
-        return jsonify({"error": "Missing input fields"}), 400
-    
-    if not county and not coordinates:
-        return jsonify({"error": "Missing location field"}), 400
-
-    if not coordinates:
+    if not latitude and longitude:
         coordinates = geocode(county)
-        print(coordinates)
+        latitude = coordinates[0]
+        longitude = coordinates[1]
 
     # Get mitigation plan from Groq API
     mitigation_plan = get_fire_mitigation_recommendation(county, month, year, cause)
 
-    return jsonify({ "message": "success", "mitigation_plan": mitigation_plan })
+    return jsonify({
+        "mitigation_plan": mitigation_plan
+    })
 
 def geocode(county):
     if not county:
